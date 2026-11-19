@@ -1,6 +1,6 @@
 {
   "name": "duckduckgo-api-49",
-  "version": "1.0.0",
+  "version": "20261119.2033.5833",
   "description": "面向编程 Agent 的 DuckDuckGo 搜索 CLI，输出结构化 JSON 或 Markdown",
   "type": "module",
   "license": "MIT",
