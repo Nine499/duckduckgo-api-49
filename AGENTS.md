@@ -4,7 +4,7 @@
 
 A DuckDuckGo search CLI for coding agents and LLMs. Takes keywords as args or stdin, prints structured JSON (default) or Markdown to stdout. Exit codes carry status: 0 ok (including zero results), 1 network/rate-limit/refused keyword, 2 invalid args.
 
-It is NOT a library, NOT an official API client — it scrapes `https://html.duckduckgo.com/html/` (unofficial, no-JS endpoint) and parses the result page. Not published to npm; distributed via GitHub, installed locally via `pnpm link --global`.
+It is NOT a library, NOT an official API client — it scrapes `https://html.duckduckgo.com/html/` (unofficial, no-JS endpoint) and parses the result page. Not published to npm; distributed via GitHub, installed globally via `pnpm add -g .` from a clone.
 
 ## Stack & Run
 
@@ -68,7 +68,9 @@ dist/         tsc output. bin target is dist/cli.js.
 - `kl` (region) and `df` (time range) DO take effect — verified by comparing results across values.
 - Result links in the HTML are DDG redirect wrappers (`//duckduckgo.com/l/?uddg=...&rut=...`); always unwrap via `extractRealUrl`, never emit the raw href.
 - Snippets contain `<b>` highlight tags — use cheerio `.text()`, not raw HTML.
-- `pnpm run build` includes `chmod +x dist/cli.js`; a bare `tsc` invocation will leave dist/cli.js non-executable and `pnpm link` broken. Use the script.
+- `pnpm run build` includes `chmod +x dist/cli.js`; a bare `tsc` invocation will leave dist/cli.js non-executable and the global install broken. Use the script.
 - stdin fallback triggers only when there are no positional args AND stdin is not a TTY. Empty piped stdin is an arg error (exit 2), not a search.
 - `dist/` is build output (gitignored). Never edit files in `dist/` — edit `src/` and rebuild.
 - Direct connections to duckduckgo.com flap in some networks (intermittent ConnectTimeout). That's environment, not a bug; the proxy env vars (`HTTPS_PROXY`/`HTTP_PROXY`/`NO_PROXY`, read automatically by undici `EnvHttpProxyAgent`) exist for that.
+- **Global install on pnpm 12: use `pnpm add -g .` only.** `pnpm link --global` is removed in pnpm 12 (hard error), and `pnpm link .` writes a `duckduckgo-api-49: link:.` override into `pnpm-lock.yaml` plus a `pnpm-workspace.yaml` — both residue, both useless (the working global command comes from the `add -g` snapshot). If that residue appears: delete `pnpm-workspace.yaml`, `git checkout -- pnpm-lock.yaml`.
+- Global installs are snapshots, not symlinks: after changing code, re-run `pnpm run build && pnpm add -g .` to refresh the installed command. A stale same-name command from an earlier global install can shadow the new one — check with `pnpm list -g`.

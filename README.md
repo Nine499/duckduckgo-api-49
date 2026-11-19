@@ -9,7 +9,7 @@
 ```bash
 git clone git@github.com:Nine499/duckduckgo-api-49.git
 cd duckduckgo-api-49
-pnpm install && pnpm run build && pnpm link --global
+pnpm install && pnpm run build && pnpm add -g .
 ```
 
 装好后在任意目录执行：
@@ -18,7 +18,7 @@ pnpm install && pnpm run build && pnpm link --global
 duckduckgo-api-49 rust async runtime
 ```
 
-正常返回结构化 JSON。卸载：`pnpm unlink --global duckduckgo-api-49`。
+正常返回结构化 JSON。卸载：`pnpm remove -g duckduckgo-api-49`。
 
 ## 用法
 
@@ -107,6 +107,9 @@ duckduckgo-api-49 rust --markdown
 - **关键词含 `"精确匹配"` 或 `site:域名` 直接报错**：DDG 的 HTML 端点对这类搜索语法恒定返回 202 拒绝页（实测与频率、退避、请求头无关），CLI 会提示去掉语法重试。`filetype:`、`intitle:`、单引号不受影响。
 - **`--safe` 效果由服务端决定**：参数会传给 DDG（`kp`），但实测其 HTML 端点在部分网络环境下不执行过滤，各取值返回相同结果。参数保留，效果不保证。
 - **偶尔一次失败**：DDG 限流（403/429）会自动退避 3 秒重试一次；直连 DDG 时通时断的网络下，重跑一遍通常就通，或设 `HTTPS_PROXY`。
+- **升级已安装的版本**：全局装的是仓库快照，不会跟着源码走。升级时重跑 `git pull && pnpm install && pnpm run build && pnpm add -g .`，`pnpm add -g .` 会直接覆盖旧版。
+- **装了新版但命令行为不对**：全局可能残留旧版同名命令。`pnpm list -g` 查版本，对不上就重跑上面的升级命令覆盖。
+- **别用 `pnpm link --global` / `pnpm link .`**：pnpm 12 已移除 `link --global`（直接报错）；`pnpm link .` 会把 `duckduckgo-api-49: link:.` 写进 `pnpm-lock.yaml` 并生成 `pnpm-workspace.yaml` 残留。本项目只用 `pnpm add -g .`。
 - **结果条数**：单次约 10 条（HTML 端点单页全部），不支持翻页。
 
 ## 项目结构
